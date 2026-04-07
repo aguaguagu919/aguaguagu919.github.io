@@ -1,26 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        body{
-            background-color: black;
+
+
+        .tab.active {
+            display: block;
         }
-        h1{
-            text-align: center;
-            font-size: 50px;
-            color: white;
+
+        .tab {
+            display: none;
         }
-        h2{
-            color:white;
-            margin: 40px;
-            font-size: 30px;
+
+        .tabs-container {
+            text-align: 10px;
+            width: 400px;
+            height: 400px;
         }
+
+        nav {
+            display: flex;
+
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
     </style>
 </head>
+
 <body>
-    <h1>Яываощшываото ыолаоытоыт ыотоыпвжвл ожтвотваожтыжуоыож ложтвпотвп ывжпотвыот ожткожптвлпт воптвкпол</h1>
-    
+    <header>
+        <nav>
+            <button data-target="tab1">яяя</button>
+            <button data-target="tab2">2</button>
+            <button data-target="tab3">3</button>
+        </nav>
+    </header>
+
+    <div class="tabs-container">
+        <div id="tab1" class="tab active">
+            <div class="cell">
+                <h2>жыжыжыжыжыж</h2>
+            </div>
+        </div>
+
+        <div id="tab2" class="tab">
+            <div class="cell">
+                <h2>бебебеббебебе</h2>
+            </div>
+        </div>
+       
+        <div id="tab3" class="tab">
+            <div class="cell">
+                <h2>бабабабаббааб</h2>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('button[data-target]').forEach(button => {
+            button.addEventListener('click', event => {
+                document.querySelectorAll('.tab').forEach(tab => {
+                    console.log([tab.id, button.dataset.target])
+                    tab.classList.toggle('active', tab.id == button.dataset.target);
+                })
+            })
+        })
+    </script>
+</body>
+
 </html>
