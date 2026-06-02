@@ -79,7 +79,7 @@
         <div id="tab3" class="tab">
             <div class="cell">
                 <h2>ВСЕ</h2>
-                <div id="countries-list"></div>
+                <div id="anime-list"></div>
             </div>
         </div>
     </div>
@@ -93,19 +93,16 @@
                 })
 
                 if (button.dataset.target === 'tab3') {
-                    fetch('https://restcountries.com/v3.1/region/europe?fields=name,population')
+                    fetch('https://api.jikan.moe/v4/top/anime?limit=5')
                         .then(res => res.json())
                         .then(data => {
-                            const list = document.getElementById('countries-list');
+                            const list = document.getElementById('anime-list');
                             list.innerHTML = '';
-                            data.forEach(country => {
-                                list.innerHTML += `<p>${country.name.common} — ${country.population.toLocaleString()} чел.</p>`;
+                            data.data.forEach(anime => {
+                                list.innerHTML += `<p>${anime.title} ⭐ ${anime.score}</p>`;
                             });
                         })
-                        .catch(err => {
-                            document.getElementById('countries-list').innerHTML = '<p>Ошибка загрузки</p>';
-                            console.error(err);
-                        });
+                        .catch(err => console.error(err));
                 }
             })
         })
