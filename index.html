@@ -23,6 +23,8 @@
             border-radius: 10px;
             background-color: rgb(186, 163, 232);
             transition: background-color 0.5s;
+            cursor: pointer;
+            border: none;
         }
 
         .button-container:hover {
@@ -38,7 +40,6 @@
         h2 {
             font-size: 40px;
             max-width: 30ch;
-
         }
 
         body {
@@ -46,10 +47,66 @@
             flex-direction: column;
             align-items: center;
             background-color: rgb(144, 177, 255);
-
         }
-        .tab1{
-            tex
+
+        #anime-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .anime-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: rgb(186, 163, 232);
+            border-radius: 12px;
+            padding: 10px;
+            width: 400px;
+        }
+
+        .anime-card img {
+            width: 60px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .anime-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .anime-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .anime-score {
+            font-size: 14px;
+            color: #444;
+        }
+
+        #loading {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        #refresh-btn {
+            font-size: 16px;
+            padding: 10px 24px;
+            border-radius: 10px;
+            background-color: rgb(186, 163, 232);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.5s;
+            margin-top: 20px;
+        }
+
+        #refresh-btn:hover {
+            background-color: rgb(215, 203, 239);
         }
     </style>
 </head>
@@ -59,7 +116,7 @@
         <nav>
             <button class="button-container" data-target="tab1">Я</button>
             <button class="button-container" data-target="tab2">О мне</button>
-            <button class="button-container" data-target="tab3">Что то </button>
+            <button class="button-container" data-target="tab3">Что то</button>
         </nav>
     </header>
 
@@ -78,34 +135,62 @@
 
         <div id="tab3" class="tab">
             <div class="cell">
-                <h2>ВСЕ</h2>
+                <h2>Топ аниме</h2>
+                <span id="loading">Загрузка...</span>
                 <div id="anime-list"></div>
+                <button id="refresh-btn">Обновить 🔄</button>
             </div>
         </div>
     </div>
 
     <script>
+        async function fetchAnime() {
+            const loading = document.getElementById('loading');
+            const list = document.getElementById('anime-list');
+
+            loading.style.display = 'block';
+            list.innerHTML = '';
+
+            try {
+                const response = await fetch('https://api.jikan.moe/v4/top/anime?limit=5');
+                const data = await response.json();
+
+                loading.style.display = 'none';
+
+                data.data.forEach(anime => {
+                    const card = document.createElement('div');
+                    card.className = 'anime-card';
+                    card.innerHTML = `
+                        <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
+                        <div class="anime-info">
+                            <span class="anime-title">${anime.title}</span>
+                            <span class="anime-score">⭐ ${anime.score ?? 'N/A'}</span>
+                            <span class="anime-score">Эпизодов: ${anime.episodes ?? '?'}</span>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+
+            } catch (error) {
+                loading.textContent = 'Ошибка загрузки 😢';
+                console.error(error);
+            }
+        }
+
         document.querySelectorAll('button[data-target]').forEach(button => {
             button.addEventListener('click', event => {
+                const target = button.dataset.target;
                 document.querySelectorAll('.tab').forEach(tab => {
-                    console.log([tab.id, button.dataset.target])
-                    tab.classList.toggle('active', tab.id == button.dataset.target);
-                })
+                    tab.classList.toggle('active', tab.id == target);
+                });
 
-                if (button.dataset.target === 'tab3') {
-                    fetch('https://api.jikan.moe/v4/top/anime?limit=5')
-                        .then(res => res.json())
-                        .then(data => {
-                            const list = document.getElementById('anime-list');
-                            list.innerHTML = '';
-                            data.data.forEach(anime => {
-                                list.innerHTML += `<p>${anime.title} ⭐ ${anime.score}</p>`;
-                            });
-                        })
-                        .catch(err => console.error(err));
+                if (target === 'tab3') {
+                    fetchAnime();
                 }
-            })
-        })
+            });
+        });
+
+        document.getElementById('refresh-btn').addEventListener('click', fetchAnime);
     </script>
 </body>
 
